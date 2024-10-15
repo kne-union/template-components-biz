@@ -1,4 +1,4 @@
-const { TabDetail } = _Test;
+const { TabDetail } = _<%=templateLibs.camelCase(name)%>;
 const { createWithRemoteLoader } = remoteLoader;
 const BaseExample = createWithRemoteLoader({
   modules: ['components-core:Global@PureGlobal', 'components-core:Layout']

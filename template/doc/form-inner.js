@@ -1,4 +1,4 @@
-const { FormInner } = _Test;
+const { FormInner } = _<%=templateLibs.camelCase(name)%>;
 const { createWithRemoteLoader } = remoteLoader;
 const BaseExample = createWithRemoteLoader({
   modules: ['components-core:FormInfo@Form']

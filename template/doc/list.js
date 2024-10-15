@@ -1,4 +1,4 @@
-const { default: List } = _Test;
+const { default: List } = _<%=templateLibs.camelCase(name)%>;
 const { createWithRemoteLoader } = remoteLoader;
 const BaseExample = createWithRemoteLoader({
   modules: ['components-core:Global@PureGlobal', 'components-core:Global@usePreset', 'components-core:Layout']
