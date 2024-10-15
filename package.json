@@ -1,6 +1,6 @@
 {
   "name": "@kne-template/components-biz",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "远程组件业务模块初始化模板",
   "scripts": {
     "init": "husky",
