@@ -11,8 +11,8 @@
           "packageName": "@kne/remote-loader"
         },
         {
-          "name": "_Test",
-          "packageName": "@components/Test"
+          "name": "_<%=templateLibs.camelCase(name)%>",
+          "packageName": "@components/<%=templateLibs.camelCase(name)%>"
         }
       ]
     },
@@ -41,8 +41,8 @@
           "packageName": "@kne/remote-loader"
         },
         {
-          "name": "_Test",
-          "packageName": "@components/Test"
+          "name": "_<%=templateLibs.camelCase(name)%>",
+          "packageName": "@components/<%=templateLibs.camelCase(name)%>"
         }
       ]
     },
@@ -56,8 +56,8 @@
           "packageName": "@kne/remote-loader"
         },
         {
-          "name": "_Test",
-          "packageName": "@components/Test"
+          "name": "_<%=templateLibs.camelCase(name)%>",
+          "packageName": "@components/<%=templateLibs.camelCase(name)%>"
         }
       ]
     }
