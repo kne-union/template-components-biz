@@ -28,7 +28,7 @@ const getColumns = ({navigate}) => {
       ellipsis: true
     },
     {
-      name: 'createdTime',
+      name: 'createdAt',
       title: '添加时间',
       type: 'datetime'
     }

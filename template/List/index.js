@@ -22,7 +22,7 @@ const stateTypeMap = new Map(stateType.map(item => [item.key, item]));
 
 const List = createWithRemoteLoader({
   modules: ['components-core:Layout@TablePage', 'components-core:Filter', 'components-core:Global@usePreset', 'components-core:StateBar']
-})(({ remoteModules }) => {
+})(({ remoteModules, ...props }) => {
   const [TablePage, Filter, usePreset, StateBar] = remoteModules;
   const { ajax, apis } = usePreset();
   const { SearchInput, getFilterValue, fields: filterFields } = Filter;
@@ -75,6 +75,7 @@ const List = createWithRemoteLoader({
         />
       }
       page={{
+        ...props,
         filter: {
           value: filter,
           onChange: setFilter,
