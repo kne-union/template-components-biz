@@ -1,110 +1,110 @@
 import { createWithRemoteLoader } from '@kne/remote-loader';
+import { useNavigate } from 'react-router-dom';
 import getColumns from './getColumns';
 import { useRef, useState } from 'react';
-import { Space, Button, App } from 'antd';
-import FormInner from '../FormInner';
+import { Space } from 'antd';
+import Create from '../Actions/Create';
+import Actions from '../Actions';
 
-const stateType = [{ tab: '全部', key: 'all' }, {
-  tab: '状态一', key: '1'
-}, {
-  tab: '状态二', key: '2'
-}];
+const stateType = [
+  { tab: '全部', key: 'all' },
+  {
+    tab: '开启',
+    key: 'open'
+  },
+  {
+    tab: '关闭',
+    key: 'closed'
+  }
+];
 
-const stateTypeMap = new Map(stateType.map((item) => [item.key, item]));
+const stateTypeMap = new Map(stateType.map(item => [item.key, item]));
 
 const List = createWithRemoteLoader({
-  modules: ['components-core:Layout@TablePage', 'components-core:Filter', 'components-core:Global@usePreset', 'components-core:FormInfo@useFormModal', 'components-core:StateBar']
+  modules: ['components-core:Layout@TablePage', 'components-core:Filter', 'components-core:Global@usePreset', 'components-core:StateBar']
 })(({ remoteModules }) => {
-  const [TablePage, Filter, usePreset, useFormModal, StateBar] = remoteModules;
+  const [TablePage, Filter, usePreset, StateBar] = remoteModules;
   const { ajax, apis } = usePreset();
   const { SearchInput, getFilterValue, fields: filterFields } = Filter;
   const { InputFilterItem } = filterFields;
   const ref = useRef(null);
   const [filter, setFilter] = useState([]);
   const filterValue = getFilterValue(filter);
-  const formModal = useFormModal();
-  const { message } = App.useApp();
-
-  return (<TablePage
-    {...Object.assign({}, apis.testApi.getList, {
-      data: Object.assign({}, filterValue)
-    })} ewf={ref}
-    name="List"
-    topArea={<StateBar
-      type="radio"
-      size="small"
-      activeKey={filterValue.stateType || 'all'}
-      onChange={(value) => {
-        const currentState = stateTypeMap.get(value);
-        setFilter((filter) => {
-          const newFilter = filter.slice(0);
-          const currentIndex = filter.findIndex((item) => item.name === 'stateType');
-          if (currentIndex === -1) {
-            newFilter.push({ name: 'stateType', value: { label: currentState.tab, value: currentState.key } });
-          } else {
-            newFilter.splice(currentIndex, 1, {
-              name: 'stateType', value: { label: currentState.tab, value: currentState.key }
-            });
+  const navigate = useNavigate();
+  return (
+    <TablePage
+      {...Object.assign(
+        {},
+        {
+          loader: () => {
+            return { pageData: [], totalCount: 0 };
           }
-          return newFilter;
-        });
+        },
+        {
+          data: Object.assign({}, filterValue)
+        }
+      )}
+      ref={ref}
+      name="list"
+      pagination={{ paramsType: 'params' }}
+      topArea={
+        <StateBar
+          type="radio"
+          size="small"
+          activeKey={filterValue.status || 'all'}
+          onChange={value => {
+            const currentState = stateTypeMap.get(value);
+            setFilter(filter => {
+              const newFilter = filter.slice(0);
+              const currentIndex = filter.findIndex(item => item.name === 'status');
 
-      }}
-      stateOption={stateType}
-    />}
-    page={{
-      filter: {
-        value: filter,
-        onChange: setFilter,
-        list: [[<InputFilterItem label="条件一" name="filter1" />, <InputFilterItem label="条件二" name="filter2" />]]
-      }, titleExtra: (<Space align="center">
-        <SearchInput name="name" label="名称" />
-        <Button type="primary" onClick={() => {
-          formModal({
-            title: '添加数据', autoClose: true, formProps: {
-              onSubmit: async (data) => {
-                const { data: resData } = await ajax(Object.assign({}, apis.testApi.add, { data }));
-                if (resData.code !== 0) {
-                  return false;
-                }
-                message.success('添加成功');
-                ref.current?.reload();
+              if (currentState.key === 'all') {
+                newFilter.splice(currentIndex, 1);
+              } else if (currentIndex === -1) {
+                newFilter.push({ name: 'status', value: { label: currentState.tab, value: currentState.key } });
+              } else {
+                newFilter.splice(currentIndex, 1, {
+                  name: 'status',
+                  value: { label: currentState.tab, value: currentState.key }
+                });
               }
-            }, children: <FormInner />
-          });
-        }}>添加</Button>
-      </Space>)
-    }}
-    columns={[...getColumns(), {
-      name: 'options', title: '操作', type: 'options', fixed: 'right', valueOf: (item) => {
-        return [{
-          children: '编辑', onClick: async () => {
-            formModal({
-              title: '编辑数据', autoClose: true, formProps: {
-                data: Object.assign({}, item), onSubmit: async (data) => {
-                  const { data: resData } = await ajax(Object.assign({}, apis.testApi.save, { data: Object.assign({}, data, { id: item.id }) }));
-                  if (resData.code !== 0) {
-                    return false;
-                  }
-                  message.success('保存成功');
-                  ref.current?.reload();
-                }
-              }, children: <FormInner />
+              return newFilter;
             });
-          }
-        }, {
-          children: '删除', confirm: true, onClick: async () => {
-            const { data: resData } = await ajax(Object.assign({}, apis.testApi.remove, { data: { id: item.id } }));
-            if (resData.code !== 0) {
-              return false;
-            }
-            message.success('删除成功');
-            ref.current?.reload();
-          }
-        }];
+          }}
+          stateOption={stateType}
+        />
       }
-    }]}
-  />);
+      page={{
+        filter: {
+          value: filter,
+          onChange: setFilter,
+          list: [[<InputFilterItem label="条件一" name="filter1" />, <InputFilterItem label="条件二" name="filter2" />]]
+        },
+        titleExtra: (
+          <Space align="center">
+            <SearchInput name="keyword" label="关键字" />
+            <Create type="primary" onSuccess={() => ref.current?.reload()}>
+              添加
+            </Create>
+          </Space>
+        )
+      }}
+      columns={[
+        ...getColumns({ navigate }),
+        {
+          name: 'options',
+          title: '操作',
+          type: 'options',
+          fixed: 'right',
+          valueOf: item => {
+            return {
+              children: <Actions data={item} onSuccess={() => ref.current?.reload()} />
+            };
+          }
+        }
+      ]}
+    />
+  );
 });
 
 export default List;
